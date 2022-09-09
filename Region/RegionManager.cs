@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
 namespace ServerSideCharacter.Region
@@ -22,7 +22,7 @@ namespace ServerSideCharacter.Region
 			{
 				RegionInfo playerRegion = new RegionInfo(name, player, rect);
 				_regions.ServerRegions.Add(playerRegion);
-				player.ownedregion.Add(playerRegion);
+				player.Ownedregion.Add(playerRegion);
 			}
 		}
 
@@ -36,18 +36,16 @@ namespace ServerSideCharacter.Region
 					_regions.ServerRegions.RemoveAt(index);
 					foreach (var player in ServerSideCharacter.XmlData.Data)
 					{
-						int id = player.Value.ownedregion.FindIndex(region => region.Name == name);
+						int id = player.Value.Ownedregion.FindIndex(region => region.Name == name);
 						if (id != -1)
 						{
-							player.Value.ownedregion.RemoveAt((id));
+							player.Value.Ownedregion.RemoveAt((id));
 						}
 					}
 					return true;
 				}
-				else
-				{
-					return false;
-				}
+
+				return false;
 			}
 		}
 
@@ -125,7 +123,7 @@ namespace ServerSideCharacter.Region
 		{
 			lock (_regions)
 			{
-				string json = JsonConvert.SerializeObject(_regions, Newtonsoft.Json.Formatting.Indented);
+				string json = JsonConvert.SerializeObject(_regions, Formatting.Indented);
 				using (StreamWriter sw = new StreamWriter(_filePath))
 				{
 					sw.Write(json);
@@ -134,14 +132,14 @@ namespace ServerSideCharacter.Region
 
 		}
 
-		public bool CheckRegion(int X, int Y, ServerPlayer player)
+		public bool CheckRegion(int x, int y, ServerPlayer player)
 		{
 			lock (_regions)
 			{
-				Vector2 tilePos = new Vector2(X, Y);
+				Vector2 tilePos = new Vector2(x, y);
 				foreach (var regions in _regions.ServerRegions)
 				{
-					if (regions.Area.Contains(X, Y) && !regions.Owner.Equals(player) && !regions.SharedOwner.Contains(player.UUID))
+					if (regions.Area.Contains(x, y) && !regions.Owner.Equals(player) && !regions.SharedOwner.Contains(player.Uuid))
 					{
 						return true;
 					}
@@ -165,7 +163,7 @@ namespace ServerSideCharacter.Region
 				return;
 			}
 			var reg = _regions.ServerRegions[index];
-			reg.SharedOwner.Add(target.UUID);
+			reg.SharedOwner.Add(target.Uuid);
 			p.SendSuccessInfo("Successfully shared " + reg.Name + " to " + target.Name);
 			target.SendSuccessInfo(p.Name + " shared region " + reg.Name + " with you!");
 		}

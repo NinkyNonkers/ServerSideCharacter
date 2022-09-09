@@ -1,14 +1,14 @@
-﻿using ServerSideCharacter.Config;
-using ServerSideCharacter.Region;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using Newtonsoft.Json;
+using ServerSideCharacter.Config;
+using ServerSideCharacter.Extensions;
+using ServerSideCharacter.Region;
 using Terraria;
 using Terraria.ModLoader;
-using Newtonsoft.Json;
-using ServerSideCharacter.Extensions;
-using System.Text;
 
 namespace ServerSideCharacter
 {
@@ -62,11 +62,9 @@ namespace ServerSideCharacter
 							arg.Append(c);
 							continue;
 						}
-						else
-						{
-							parsedArgs.Add(arg.ToString());
-							arg.Clear();
-						}
+
+						parsedArgs.Add(arg.ToString());
+						arg.Clear();
 						break;
 					default:
 						arg.Append(c);
@@ -88,7 +86,7 @@ namespace ServerSideCharacter
 				return null;
 			}
 		}
-		public static int TryGetPlayerID(object obj)
+		public static int TryGetPlayerId(object obj)
 		{
 			if (!(obj is int) && !(obj is string) && !(obj is byte))
 				return -1;
@@ -96,7 +94,7 @@ namespace ServerSideCharacter
 			int who;
 			if (!int.TryParse(text, out who))
 			{
-				Player player = Utils.TryGetPlayer(text);
+				Player player = TryGetPlayer(text);
 				if (player == null || !player.active)
 				{
 					return -1;
@@ -113,32 +111,32 @@ namespace ServerSideCharacter
 				return who;
 			}
 		}
-		private static Dictionary<int, NPC> npcs = new Dictionary<int, NPC>();
-		private static readonly int[] ignoredNpcs = { 8, 9, 11, 12, 14, 15, 36, 40, 41, 89, 90, 91, 92, 96, 97, 99, 100, 118, 119, 128, 129, 130, 131, 135, 136, 246, 247, 248, 261, 263, 264, 265, 394, 396, 397, 403, 404, 413, 414, 455, 456, 457, 458, 459, 492, 511, 512, 514, 515 };
+		private static Dictionary<int, NPC> _npcs = new Dictionary<int, NPC>();
+		private static readonly int[] IgnoredNpcs = { 8, 9, 11, 12, 14, 15, 36, 40, 41, 89, 90, 91, 92, 96, 97, 99, 100, 118, 119, 128, 129, 130, 131, 135, 136, 246, 247, 248, 261, 263, 264, 265, 394, 396, 397, 403, 404, 413, 414, 455, 456, 457, 458, 459, 492, 511, 512, 514, 515 };
 		private static void SetupNpcs()
 		{
-			for (int i = 0; i < Main.NPCLoaded.Length; i++)
+			for (int i = 0; i < Main.npc.Length; i++)
 			{
 				NPC npc = new NPC();
 				npc.SetDefaults(i);
-				npcs.Add(i, npc);
+				_npcs.Add(i, npc);
 			}
 		}
-		public static NPC TryGetNPC(string name)
+		public static NPC TryGetNpc(string name)
 		{
 			try
 			{
-				if (npcs.Count == 0)
+				if (_npcs.Count == 0)
 					SetupNpcs();
 
-				NPC[] npcArray = npcs.ToList().FindAll(v => v.Value.TypeName.Contains(name, StringComparison.OrdinalIgnoreCase) || v.Value.TypeName.Contains(name, StringComparison.OrdinalIgnoreCase)).Select(v => v.Value).ToArray();
+				NPC[] npcArray = _npcs.ToList().FindAll(v => v.Value.TypeName.Contains(name, StringComparison.OrdinalIgnoreCase) || v.Value.TypeName.Contains(name, StringComparison.OrdinalIgnoreCase)).Select(v => v.Value).ToArray();
 				NPC best = null;
 				if (npcArray.Length == 1)
 					return npcArray[0];
-				else if (npcArray.Length > 1)
+				if (npcArray.Length > 1)
 					foreach (var npc in npcArray)
 					{
-						if (ignoredNpcs.Contains(npc.type))
+						if (IgnoredNpcs.Contains(npc.type))
 							continue;
 						if (npc.TypeName.Contains(name, StringComparison.OrdinalIgnoreCase))
 							best = npc;
@@ -161,11 +159,11 @@ namespace ServerSideCharacter
 		public static NetItem ToNetItem(Item item)
 		{
 			NetItem toRet = new NetItem();
-			if (item.modItem != null)
+			if (item.ModItem != null)
 			{
-				string nameSpace = item.modItem.GetType().Namespace;
-				string itemName = item.modItem.GetType().Name;
-				toRet.ItemID = -1;
+				string nameSpace = item.ModItem.GetType().Namespace;
+				string itemName = item.ModItem.GetType().Name;
+				toRet.ItemId = -1;
 				toRet.IsModItem = true;
 				toRet.Prefix = item.prefix;
 				toRet.ModName = nameSpace;
@@ -173,16 +171,14 @@ namespace ServerSideCharacter
 				toRet.IsFavorite = item.favorited;
 				return toRet;
 			}
-			else
-			{
-				toRet.ItemID = item.netID;
-				toRet.IsModItem = false;
-				toRet.Prefix = item.prefix;
-				toRet.ModName = "";
-				toRet.ItemName = "";
-				toRet.IsFavorite = item.favorited;
-				return toRet;
-			}
+
+			toRet.ItemId = item.netID;
+			toRet.IsModItem = false;
+			toRet.Prefix = item.prefix;
+			toRet.ModName = "";
+			toRet.ItemName = "";
+			toRet.IsFavorite = item.favorited;
+			return toRet;
 		}
 
 		public static NetItem ToNetItem(int type)
@@ -196,13 +192,13 @@ namespace ServerSideCharacter
 		{
 			if (netItem.IsModItem)
 			{
-				var target_mod = ModLoader.LoadedMods.Where(mod => mod.Name == netItem.ModName);
-				if (target_mod.Count() == 0)
+				var targetMod = ModLoader.Mods.Where(mod => mod.Name == netItem.ModName);
+				if (targetMod.Count() == 0)
 				{
 					return new Item();
 				}
 				Item item = new Item();
-				item.netDefaults(target_mod.First().ItemType(netItem.ItemName));
+				item.netDefaults(targetMod.First().ItemType(netItem.ItemName));
 				item.prefix = (byte)netItem.Prefix;
 				item.favorited = netItem.IsFavorite;
 				return item;
@@ -210,7 +206,7 @@ namespace ServerSideCharacter
 			else
 			{
 				Item item = new Item();
-				item.netDefaults(netItem.ItemID);
+				item.netDefaults(netItem.ItemId);
 				item.prefix = (byte)netItem.Prefix;
 				item.favorited = netItem.IsFavorite;
 				return item;
@@ -223,16 +219,14 @@ namespace ServerSideCharacter
 			{
 				return new ChestManager().Initialize();
 			}
-			else
+
+			ChestManager manager;
+			using (StreamReader sr = new StreamReader("SSC/chest.json"))
 			{
-				ChestManager manager;
-				using (StreamReader sr = new StreamReader("SSC/chest.json"))
-				{
-					string data = sr.ReadToEnd();
-					manager = JsonConvert.DeserializeObject<ChestManager>(data);
-				}
-				return manager;
+				string data = sr.ReadToEnd();
+				manager = JsonConvert.DeserializeObject<ChestManager>(data);
 			}
+			return manager;
 		}
 		public static void SaveChestInfo()
 		{

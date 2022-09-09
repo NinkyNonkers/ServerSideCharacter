@@ -34,8 +34,6 @@ namespace ServerSideCharacter.ServerCommand
 					{
 						break;
 					}
-				default:
-					break;
 			}
 			MessageSender.SendGeneration(genType);
 		}

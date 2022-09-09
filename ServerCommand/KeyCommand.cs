@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
-using Terraria.ModLoader;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {
 	public class KeyCommand : ModCommand
 	{
-		private static HashSet<int> keys = new HashSet<int>()
+		private static HashSet<int> _keys = new HashSet<int>
 		{
 			ItemID.HallowedKey,
 			ItemID.JungleKey,
@@ -43,23 +44,28 @@ namespace ServerSideCharacter.ServerCommand
 			{
 				return ItemID.PiranhaGun;
 			}
-			else if (id == ItemID.HallowedKey)
+
+			if (id == ItemID.HallowedKey)
 			{
 				return ItemID.RainbowGun;
 			}
-			else if (id == ItemID.CrimsonKey)
+
+			if (id == ItemID.CrimsonKey)
 			{
 				return ItemID.VampireKnives;
 			}
-			else if (id == ItemID.CorruptionKey)
+
+			if (id == ItemID.CorruptionKey)
 			{
 				return ItemID.ScourgeoftheCorruptor;
 			}
-			else if (id == ItemID.FrozenKey)
+
+			if (id == ItemID.FrozenKey)
 			{
 				return ItemID.StaffoftheFrostHydra;
 			}
-			else if (id == ItemID.GoldenKey)
+
+			if (id == ItemID.GoldenKey)
 			{
 				int i = Main.rand.Next(5);
 				if (i == 0) return ItemID.Handgun;
@@ -77,12 +83,12 @@ namespace ServerSideCharacter.ServerCommand
 			bool anyKeys = false;
 			for (int i = 0; i < player.inventory.Length; i++)
 			{
-				if (keys.Contains(player.inventory[i].type))
+				if (_keys.Contains(player.inventory[i].type))
 				{
 					while (player.inventory[i].stack != 0)
 					{
 						player.inventory[i].stack--;
-						player.QuickSpawnItem(GetKeyItem(player.inventory[i].type));
+						player.QuickSpawnItem(new EntitySource_DebugCommand(input), GetKeyItem(player.inventory[i].type));
 					}
 					player.inventory[i] = new Item();
 					anyKeys = true;

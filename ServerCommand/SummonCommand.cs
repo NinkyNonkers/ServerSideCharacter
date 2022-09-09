@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using Terraria.ModLoader;
-using Terraria;
 using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {
@@ -49,7 +49,7 @@ namespace ServerSideCharacter.ServerCommand
 			int amount = int.Parse(args[1]);
 			if (!int.TryParse(args[0], out type))
 			{
-				NPC npc = Utils.TryGetNPC(args[0]);
+				NPC npc = Utils.TryGetNpc(args[0]);
 				if (npc == null)
 				{
 					Main.NewText("NPC not found", Color.Red);

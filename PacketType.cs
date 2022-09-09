@@ -1,6 +1,6 @@
 ﻿namespace ServerSideCharacter
 {
-	public enum SSCMessageType
+	public enum SscMessageType
 	{
 		SyncPlayerHealth,
 		SyncPlayerMana,
@@ -17,10 +17,10 @@
 		KillCommand,
 		ListCommand,
 		SummonCommand,
-		TPHereCommand,
+		TpHereCommand,
 		ButcherCommand,
 		BanItemCommand,
-		TPCommand,
+		TpCommand,
 		TimeCommand,
 		ToggleExpert,
 		ToggleHardMode,
@@ -35,7 +35,7 @@
 		ServerSideCharacter,
 		GenResources,
 		ChestCommand,
-		TPProtect
+		TpProtect
 	}
 
 	public enum GenerationType

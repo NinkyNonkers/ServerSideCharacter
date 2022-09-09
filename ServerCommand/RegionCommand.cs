@@ -1,7 +1,6 @@
-﻿using System;
-using Terraria.ModLoader;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {
@@ -46,7 +45,7 @@ namespace ServerSideCharacter.ServerCommand
 			else if (args[0] == "share")
 			{
 				string name = args[1];
-				int who = Utils.TryGetPlayerID(args[2]);
+				int who = Utils.TryGetPlayerId(args[2]);
 				if (who == -1)
 				{
 					Main.NewText("Player not found", Color.Red);

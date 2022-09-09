@@ -1,5 +1,5 @@
-﻿using Terraria.ModLoader;
-using Terraria;
+﻿using Terraria;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {
@@ -28,7 +28,7 @@ namespace ServerSideCharacter.ServerCommand
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
 			ModPacket pack = ServerSideCharacter.Instance.GetPacket();
-			pack.Write((int)SSCMessageType.ToggleGodMode);
+			pack.Write((int)SscMessageType.ToggleGodMode);
 			pack.Write((byte)Main.myPlayer);
 			pack.Send();
 		}

@@ -1,6 +1,6 @@
-﻿using Terraria.ModLoader;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {
@@ -29,7 +29,7 @@ namespace ServerSideCharacter.ServerCommand
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
 			args = Utils.ParseArgs(args);
-			int who = Utils.TryGetPlayerID(args[0]);
+			int who = Utils.TryGetPlayerId(args[0]);
 			if (who == -1)
 			{
 				Main.NewText("Player not found", Color.Red);

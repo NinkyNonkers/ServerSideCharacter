@@ -1,7 +1,6 @@
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.Localization;
 
 namespace ServerSideCharacter.Items
 {
@@ -11,21 +10,21 @@ namespace ServerSideCharacter.Items
 
 		public override void SetDefaults()
 		{
-			item.height = 32;
-			item.width = 32;
-			item.rare = 10;
-			item.expert = true;
-			item.value = 0;
-			item.useTime = 30;
-			item.useAnimation = 30;
-			item.useStyle = 4;
+			Item.height = 32;
+			Item.width = 32;
+			Item.rare = 10;
+			Item.expert = true;
+			Item.value = 0;
+			Item.useTime = 30;
+			Item.useAnimation = 30;
+			Item.useStyle = 4;
 		}
 
 		public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Region Item");
 
-			DisplayName.AddTranslation(GameCulture.Chinese, "圈地物品");
+			//DisplayName.AddTranslation(GameCulture.Chinese, "脠娄碌脴脦茂脝路");
 
 		}
 
@@ -33,20 +32,20 @@ namespace ServerSideCharacter.Items
 		{
 			return true;
 		}
-		public override bool UseItem(Player player)
+		public override bool? UseItem(Player player)
 		{
 			
 			if (player.altFunctionUse != 2 && Main.mouseLeftRelease)
 			{
 				Vector2 tilePos = new Vector2(Player.tileTargetX, Player.tileTargetY);
 				ServerSideCharacter.TilePos1 = tilePos;
-				Main.NewText(string.Format("Selected tile positon 1 at ({0}, {1})", tilePos.X, tilePos.Y));
+				Main.NewText($"Selected tile positon 1 at ({tilePos.X}, {tilePos.Y})");
 			}
 			else if (player.altFunctionUse == 2 && Main.mouseRightRelease)
 			{
 				Vector2 tilePos = new Vector2(Player.tileTargetX, Player.tileTargetY);
 				ServerSideCharacter.TilePos2 = tilePos;
-				Main.NewText(string.Format("Selected tile positon 2 at ({0}, {1})", tilePos.X, tilePos.Y));
+				Main.NewText($"Selected tile positon 2 at ({tilePos.X}, {tilePos.Y})");
 			}
 			return true;
 		}

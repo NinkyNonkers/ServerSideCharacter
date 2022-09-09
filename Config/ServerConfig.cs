@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using ServerSideCharacter.ServerCommand;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ServerSideCharacter.ServerCommand;
 
 namespace ServerSideCharacter.Config
 {
@@ -132,10 +132,12 @@ namespace ServerSideCharacter.Config
 
 		private void SetUpStartInv()
 		{
-			if (ModLoader.LoadedMods.Any(mod => mod.Name == "ThoriumMod"))
+			if (ModLoader.Mods.Any(mod => mod.Name == "ThoriumMod"))
 			{
-				var thorium = ModLoader.LoadedMods.Where(mod => mod.Name == "ThoriumMod");
-				AddToStartInv(thorium.First().ItemType("FamilyHeirloom"));
+				var thorium = ModLoader.Mods.Where(mod => mod.Name == "ThoriumMod");
+				//wtf is this shit lmao
+				//TODO: find way of getting id through reflection
+				//AddToStartInv(thorium.First().Find("FamilyHeirloom"));
 			}
 		}
 
@@ -158,9 +160,7 @@ namespace ServerSideCharacter.Config
 		{
 			string data = JsonConvert.SerializeObject(_configData, Formatting.Indented);
 			using (StreamWriter sw = new StreamWriter(_configPath))
-			{
 				sw.Write(data);
-			}
 		}
 
 		public bool IsItemBanned(Item item, ServerPlayer player)
@@ -169,11 +169,7 @@ namespace ServerSideCharacter.Config
 			{
 				return false;
 			}
-			bool banned = false;
-			if (_configData.BannedItems.Any(nitem => nitem.TheSameItem(item)))
-			{
-				banned = true;
-			}
+			bool banned = _configData.BannedItems.Any(nitem => nitem.TheSameItem(item));
 			return banned;
 		}
 

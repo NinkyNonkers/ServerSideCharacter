@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 
 namespace ServerSideCharacter.GroupManage
@@ -25,14 +25,14 @@ namespace ServerSideCharacter.GroupManage
 			{
 				ChatPrefix = "Default"
 			};
-			defaultGroup.permissions.Add(new PermissionInfo("tp", "Teleport player"));
-			defaultGroup.permissions.Add(new PermissionInfo("ls", "List online player's info"));
-			defaultGroup.permissions.Add(new PermissionInfo("auth", "Authorize as super admin"));
+			defaultGroup.Permissions.Add(new PermissionInfo("tp", "Teleport player"));
+			defaultGroup.Permissions.Add(new PermissionInfo("ls", "List online player's info"));
+			defaultGroup.Permissions.Add(new PermissionInfo("auth", "Authorize as super admin"));
 			Group admin = new Group("admin")
 			{
 				ChatColor = Color.Red,
 				ChatPrefix = "Admin",
-				permissions = new List<PermissionInfo>(defaultGroup.permissions)
+				Permissions = new List<PermissionInfo>(defaultGroup.Permissions)
 				{
 					new PermissionInfo("time", "Changing times"),
 					new PermissionInfo("butcher", "Kill all monsters"),
@@ -56,7 +56,7 @@ namespace ServerSideCharacter.GroupManage
 				ChatColor = Color.Cyan,
 				ChatPrefix = "Super Admin",
 			};
-			superAdmin.permissions.Add(new PermissionInfo("all", "all commands"));
+			superAdmin.Permissions.Add(new PermissionInfo("all", "all commands"));
 			DefaultGroups.Add("default", defaultGroup);
 			DefaultGroups.Add("criminal", crminalGroup);
 			DefaultGroups.Add("admin", admin);

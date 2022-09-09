@@ -1,7 +1,7 @@
 ﻿using System;
-using Terraria.ModLoader;
-using Terraria;
 using ServerSideCharacter.Region;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {

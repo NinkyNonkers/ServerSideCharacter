@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 
 namespace ServerSideCharacter.GroupManage
 {
@@ -9,8 +9,8 @@ namespace ServerSideCharacter.GroupManage
 	{
 		[JsonIgnore]
 		public string GroupName { get; set; }
-		public List<PermissionInfo> permissions = new List<PermissionInfo>();
-		public Color ChatColor = new Color();
+		public List<PermissionInfo> Permissions = new List<PermissionInfo>();
+		public Color ChatColor;
 		public string ChatPrefix = "";
 
 		public Group(string name)
@@ -26,7 +26,7 @@ namespace ServerSideCharacter.GroupManage
 
 		public bool HasPermission(string name)
 		{
-			return GroupName == "spadmin" || permissions.Any(t => t.Name == name);
+			return GroupName == "spadmin" || Permissions.Any(t => t.Name == name);
 		}
 	}
 }

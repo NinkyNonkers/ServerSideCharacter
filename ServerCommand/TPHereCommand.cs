@@ -1,10 +1,10 @@
-﻿using Terraria.ModLoader;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {
-	public class TPHereCommand : ModCommand
+	public class TpHereCommand : ModCommand
 	{
 		public override string Command
 		{
@@ -28,14 +28,14 @@ namespace ServerSideCharacter.ServerCommand
 
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
-			int who = Utils.TryGetPlayerID(args[0]);
+			int who = Utils.TryGetPlayerId(args[0]);
 			if (who == -1)
 			{
 				Main.NewText("Player not found", Color.Red);
 				return;
 			}
 			ModPacket pack = ServerSideCharacter.Instance.GetPacket();
-			pack.Write((int)SSCMessageType.TPHereCommand);
+			pack.Write((int)SscMessageType.TpHereCommand);
 			pack.Write((byte)Main.myPlayer);
 			pack.Write((byte)who);
 			pack.Send();

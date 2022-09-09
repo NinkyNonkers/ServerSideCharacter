@@ -8,7 +8,7 @@ namespace ServerSideCharacter.ServerCommand
 		public static void ConsoleSaveInfo()
 		{
 			Console.ForegroundColor = ConsoleColor.Yellow;
-			string info = string.Format("[SSC {0}] Saved all player data", ServerSideCharacter.APIVersion);
+			string info = $"[SSC {ServerSideCharacter.ApiVersion}] Saved all player data";
 			Console.WriteLine(info);
 			LogInfo(info);
 			Console.ResetColor();
@@ -17,21 +17,21 @@ namespace ServerSideCharacter.ServerCommand
 		public static void ConsoleSavePlayer(ServerPlayer p)
 		{
 			Console.ForegroundColor = ConsoleColor.Yellow;
-			string info = string.Format("[SSC {0}] Saved {1}'s data", ServerSideCharacter.APIVersion, p.Name);
+			string info = $"[SSC {ServerSideCharacter.ApiVersion}] Saved {p.Name}'s data";
 			Console.WriteLine(info);
 			LogInfo(info);
 			Console.ResetColor();
 		}
 		public static void ConsoleNormalText(string msg)
 		{
-			string info = string.Format("[SSC {0}] {1}", ServerSideCharacter.APIVersion, msg);
+			string info = $"[SSC {ServerSideCharacter.ApiVersion}] {msg}";
 			Console.WriteLine(info);
 			LogInfo(info);
 		}
 		public static void ConsoleMessage(string msg)
 		{
 			Console.ForegroundColor = ConsoleColor.Yellow;
-			string info = string.Format("[SSC {0}] {1}", ServerSideCharacter.APIVersion, msg);
+			string info = $"[SSC {ServerSideCharacter.ApiVersion}] {msg}";
 			Console.WriteLine(info);
 			LogInfo(info);
 			Console.ResetColor();
@@ -39,7 +39,7 @@ namespace ServerSideCharacter.ServerCommand
 		public static void ConsoleError(Exception ex)
 		{
 			Console.ForegroundColor = ConsoleColor.Red;
-			string info = string.Format("[SSC {0}] {1}", ServerSideCharacter.APIVersion, ex);
+			string info = $"[SSC {ServerSideCharacter.ApiVersion}] {ex}";
 			Console.WriteLine(info);
 			LogInfo(info);
 			Console.ResetColor();
@@ -47,7 +47,7 @@ namespace ServerSideCharacter.ServerCommand
 		public static void ConsoleError(string msg)
 		{
 			Console.ForegroundColor = ConsoleColor.Red;
-			string info = string.Format("[SSC {0}] {1}", ServerSideCharacter.APIVersion, msg);
+			string info = $"[SSC {ServerSideCharacter.ApiVersion}] {msg}";
 			Console.WriteLine(info);
 			LogInfo(info);
 			Console.ResetColor();

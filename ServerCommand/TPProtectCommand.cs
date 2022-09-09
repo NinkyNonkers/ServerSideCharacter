@@ -1,10 +1,9 @@
-﻿using Terraria.ModLoader;
-using Terraria;
-using Microsoft.Xna.Framework;
+﻿using Terraria;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {
-	public class TPProtectCommand : ModCommand
+	public class TpProtectCommand : ModCommand
 	{
 		public override string Command
 		{
@@ -28,7 +27,7 @@ namespace ServerSideCharacter.ServerCommand
 
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
-			MessageSender.SendTPProtect(Main.myPlayer);
+			MessageSender.SendTpProtect(Main.myPlayer);
 		}
 	}
 }

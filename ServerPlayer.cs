@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using ServerSideCharacter.GroupManage;
 using ServerSideCharacter.Region;
 using Terraria;
+using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
 
@@ -11,19 +12,19 @@ namespace ServerSideCharacter
 {
 	public class ServerPlayer
 	{
-		private static int NextID = 0;
+		private static int _nextId;
 
 		public bool HasPassword { get; set; }
 
 		public bool IsLogin { get; set; }
 
-		public bool TPProtect { get; set; }
+		public bool TpProtect { get; set; }
 
 		public string Name { get; set; }
 
 		public string Password { get; set; }
 
-		public int UUID { get; set; }
+		public int Uuid { get; set; }
 
 		public Group PermissionGroup { get; set; }
 
@@ -35,65 +36,56 @@ namespace ServerSideCharacter
 
 		public int StatMana { get; set; }
 
-		public Item[] inventory = new Item[59];
+		public Item[] Inventory = new Item[59];
 
-		public Item[] armor = new Item[20];
+		public Item[] Armor = new Item[20];
 
-		public Item[] dye = new Item[10];
+		public Item[] Dye = new Item[10];
 
-		public Item[] miscEquips = new Item[5];
+		public Item[] MiscEquips = new Item[5];
 
-		public Item[] miscDye = new Item[5];
+		public Item[] MiscDye = new Item[5];
 
-		public Chest bank = new Chest(true);
+		public Chest Bank = new Chest(true);
 
-		public Chest bank2 = new Chest(true);
+		public Chest Bank2 = new Chest(true);
 
-		public Chest bank3 = new Chest(true);
+		public Chest Bank3 = new Chest(true);
 
 		public Player PrototypePlayer { get; set; }
 
 		public RegionInfo EnteredRegion { get; set; }
 
-		public List<RegionInfo> ownedregion = new List<RegionInfo>();
+		public List<RegionInfo> Ownedregion = new List<RegionInfo>();
 
 
 		private void SetupPlayer()
 		{
-			for (int i = 0; i < inventory.Length; i++)
-			{
-				inventory[i] = new Item();
-			}
-			for (int i = 0; i < armor.Length; i++)
-			{
-				armor[i] = new Item();
-			}
-			for (int i = 0; i < dye.Length; i++)
-			{
-				dye[i] = new Item();
-			}
-			for (int i = 0; i < miscEquips.Length; i++)
-			{
-				miscEquips[i] = new Item();
-			}
-			for (int i = 0; i < miscDye.Length; i++)
-			{
-				miscDye[i] = new Item();
-			}
-			for (int i = 0; i < bank.item.Length; i++)
-			{
-				bank.item[i] = new Item();
-			}
-			for (int i = 0; i < bank2.item.Length; i++)
-			{
-				bank2.item[i] = new Item();
-			}
-			for (int i = 0; i < bank3.item.Length; i++)
-			{
-				bank3.item[i] = new Item();
-			}
-
+			for (int i = 0; i < Inventory.Length; i++)
+				Inventory[i] = new Item();
+			
+			for (int i = 0; i < Armor.Length; i++)
+				Armor[i] = new Item();
+			
+			for (int i = 0; i < Dye.Length; i++)
+				Dye[i] = new Item();
+			
+			for (int i = 0; i < MiscEquips.Length; i++)
+				MiscEquips[i] = new Item();
+			
+			for (int i = 0; i < MiscDye.Length; i++)
+				MiscDye[i] = new Item();
+			
+			for (int i = 0; i < Bank.item.Length; i++)
+				Bank.item[i] = new Item();
+			
+			for (int i = 0; i < Bank2.item.Length; i++)
+				Bank2.item[i] = new Item();
+			
+			for (int i = 0; i < Bank3.item.Length; i++)
+				Bank3.item[i] = new Item();
 		}
+		
 		public ServerPlayer()
 		{
 			SetupPlayer();
@@ -111,14 +103,14 @@ namespace ServerSideCharacter
 			StatLife = player.statLife;
 			StatMana = player.statMana;
 			ManaMax = player.statManaMax;
-			player.inventory.CopyTo(inventory, 0);
-			player.armor.CopyTo(armor, 0);
-			player.dye.CopyTo(dye, 0);
-			player.miscEquips.CopyTo(miscEquips, 0);
-			player.miscDyes.CopyTo(miscDye, 0);
-			bank = (Chest)player.bank.Clone();
-			bank2 = (Chest)player.bank2.Clone();
-			bank3 = (Chest)player.bank3.Clone();
+			player.inventory.CopyTo(Inventory, 0);
+			player.armor.CopyTo(Armor, 0);
+			player.dye.CopyTo(Dye, 0);
+			player.miscEquips.CopyTo(MiscEquips, 0);
+			player.miscDyes.CopyTo(MiscDye, 0);
+			Bank = (Chest)player.bank.Clone();
+			Bank2 = (Chest)player.bank2.Clone();
+			Bank3 = (Chest)player.bank3.Clone();
 		}
 
 
@@ -128,23 +120,23 @@ namespace ServerSideCharacter
 			PrototypePlayer.AddBuff(BuffID.Frozen, time, false);
 			NetMessage.SendData(MessageID.AddPlayerBuff, PrototypePlayer.whoAmI, -1,
 				NetworkText.Empty, PrototypePlayer.whoAmI,
-				ServerSideCharacter.Instance.BuffType("Locked"), time * 2, 0f, 0, 0, 0);
+				ServerSideCharacter.Instance.BuffType("Locked"), time * 2);
 			NetMessage.SendData(MessageID.AddPlayerBuff, PrototypePlayer.whoAmI, -1,
 				NetworkText.Empty, PrototypePlayer.whoAmI,
-				BuffID.Frozen, time, 0f, 0, 0, 0);
+				BuffID.Frozen, time);
 		}
 
 		public void SendSuccessInfo(string msg)
 		{
-			NetMessage.SendChatMessageToClient(NetworkText.FromLiteral(msg), new Color(255, 50, 255, 50), PrototypePlayer.whoAmI);
+			ChatHelper.SendChatMessageToClient(NetworkText.FromLiteral(msg), new Color(255, 50, 255, 50), PrototypePlayer.whoAmI);
 		}
 		public void SendInfo(string msg)
 		{
-			NetMessage.SendChatMessageToClient(NetworkText.FromLiteral(msg), new Color(255, 255, 255, 0), PrototypePlayer.whoAmI);
+			ChatHelper.SendChatMessageToClient(NetworkText.FromLiteral(msg), new Color(255, 255, 255, 0), PrototypePlayer.whoAmI);
 		}
 		public void SendErrorInfo(string msg)
 		{
-			NetMessage.SendChatMessageToClient(NetworkText.FromLiteral(msg), new Color(255, 20, 20, 0), PrototypePlayer.whoAmI);
+			ChatHelper.SendChatMessageToClient(NetworkText.FromLiteral(msg), new Color(255, 20, 20, 0), PrototypePlayer.whoAmI);
 		}
 
 		//      public static string GenHashCode(string name)
@@ -161,14 +153,14 @@ namespace ServerSideCharacter
 			int i = 0;
 			foreach (var item in ServerSideCharacter.Config.StartupItems)
 			{
-				player.inventory[i++] = Utils.GetItemFromNet(item);
+				player.Inventory[i++] = Utils.GetItemFromNet(item);
 			}
 			player.Name = p.name;
-			player.UUID = GetNextID();
+			player.Uuid = GetNextId();
 			player.HasPassword = false;
 			player.PermissionGroup = ServerSideCharacter.GroupManager.Groups["default"];
 			player.IsLogin = false;
-			player.TPProtect = true;
+			player.TpProtect = true;
 			player.Password = "";
 			player.LifeMax = 100;
 			player.StatLife = 100;
@@ -179,14 +171,14 @@ namespace ServerSideCharacter
 
 		public static void SendInfoToAll(string msg)
 		{
-			NetMessage.BroadcastChatMessage(NetworkText.FromLiteral(msg), new Color(255, 255, 255));
+			ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(msg), new Color(255, 255, 255));
 		}
 
 		public static ServerPlayer FindPlayer(int uuid)
 		{
 			foreach (var pair in ServerSideCharacter.XmlData.Data)
 			{
-				if (pair.Value.UUID == uuid)
+				if (pair.Value.Uuid == uuid)
 				{
 					return pair.Value;
 				}
@@ -217,23 +209,23 @@ namespace ServerSideCharacter
 
 		public void SavePlayer()
 		{
-			this.CopyFrom(this.PrototypePlayer);
+			CopyFrom(PrototypePlayer);
 			ServerSideCharacter.MainWriter.Write(this);
 		}
 
-		private static int GetNextID()
+		private static int GetNextId()
 		{
-			return NextID++;
+			return _nextId++;
 		}
 
-		internal static void IncreaseUUID()
+		internal static void IncreaseUuid()
 		{
-			NextID++;
+			_nextId++;
 		}
 
-		internal static void ResetUUID()
+		internal static void ResetUuid()
 		{
-			NextID = 0;
+			_nextId = 0;
 		}
 
 	}

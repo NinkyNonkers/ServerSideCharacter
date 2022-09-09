@@ -1,7 +1,6 @@
 ﻿using System;
 using Terraria;
 
-
 namespace ServerSideCharacter
 {
 	public static class PlayerExtension
@@ -12,10 +11,8 @@ namespace ServerSideCharacter
 			{
 				return ServerSideCharacter.XmlData.Data[p.name];
 			}
-			else
-			{
-				throw new ArgumentException("Player name not found!");
-			}
+
+			throw new ArgumentException("Player name not found!");
 		}
 	}
 }

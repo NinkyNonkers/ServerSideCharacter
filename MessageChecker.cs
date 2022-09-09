@@ -1,16 +1,18 @@
-﻿using Microsoft.Xna.Framework;
-using ServerSideCharacter.GroupManage;
-using ServerSideCharacter.Region;
-using ServerSideCharacter.ServerCommand;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
+using ServerSideCharacter.GroupManage;
+using ServerSideCharacter.Region;
+using ServerSideCharacter.ServerCommand;
 using Terraria;
 using Terraria.Chat;
+using Terraria.GameContent.NetModules;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.Net;
 
 namespace ServerSideCharacter
 {
@@ -58,7 +60,7 @@ namespace ServerSideCharacter
 			//Read the module ID to determine if this is in fact the text module
 			if (Main.netMode == 2)
 			{
-				if (moduleId == Terraria.Net.NetManager.Instance.GetId<Terraria.GameContent.NetModules.NetTextModule>())
+				if (moduleId == NetManager.Instance.GetId<NetTextModule>())
 				{
 					//Then deserialize the message from the reader
 					var msg = ChatMessage.Deserialize(reader);
@@ -109,7 +111,7 @@ namespace ServerSideCharacter
 						{
 							if (!ServerSideCharacter.ChestManager.IsPublic(id))
 							{
-								ServerSideCharacter.ChestManager.SetOwner(id, sPlayer.UUID, true);
+								ServerSideCharacter.ChestManager.SetOwner(id, sPlayer.Uuid, true);
 								sPlayer.SendSuccessInfo("This chest is now Public");
 							}
 							else
@@ -124,7 +126,7 @@ namespace ServerSideCharacter
 						{
 							if (ServerSideCharacter.ChestManager.IsPublic(id))
 							{
-								ServerSideCharacter.ChestManager.SetOwner(id, sPlayer.UUID, false);
+								ServerSideCharacter.ChestManager.SetOwner(id, sPlayer.Uuid, false);
 								sPlayer.SendSuccessInfo("This chest is not Public anymore");
 							}
 							else
@@ -136,7 +138,7 @@ namespace ServerSideCharacter
 					case ChestManager.Pending.Protect:
 						if (ServerSideCharacter.ChestManager.IsNull(id))
 						{
-							ServerSideCharacter.ChestManager.SetOwner(id, sPlayer.UUID, false);
+							ServerSideCharacter.ChestManager.SetOwner(id, sPlayer.Uuid, false);
 							sPlayer.SendSuccessInfo("You now own this chest");
 						}
 						else if (ServerSideCharacter.ChestManager.IsOwner(id, sPlayer))
@@ -161,7 +163,7 @@ namespace ServerSideCharacter
 							ChestInfo chest = ServerSideCharacter.ChestManager.ChestInfo[id];
 							StringBuilder info = new StringBuilder();
 							if (sPlayer.PermissionGroup.HasPermission("chest"))
-								info.AppendLine($"Owner: {ServerPlayer.FindPlayer(chest.OwnerID).Name}"); //For Admins
+								info.AppendLine($"Owner: {ServerPlayer.FindPlayer(chest.OwnerId).Name}"); //For Admins
 							info.AppendLine($"Public Chest: {chest.IsPublic.ToString().ToUpper()}");
 							info.AppendLine($"Friends ({chest.Friends.Count.ToString()}): {string.Join(", ", chest.Friends.ToArray().Take(10).Select(uuid => ServerPlayer.FindPlayer(uuid).Name))}");
 							sPlayer.SendInfo(info.ToString());
@@ -176,21 +178,20 @@ namespace ServerSideCharacter
 						{
 							if (ServerSideCharacter.Config.AutoProtectChests)
 							{
-								ServerSideCharacter.ChestManager.SetOwner(id, sPlayer.UUID, false);
+								ServerSideCharacter.ChestManager.SetOwner(id, sPlayer.Uuid, false);
 								sPlayer.SendSuccessInfo("You now own this chest");
 							}
 							else
 								sPlayer.SendErrorInfo("Use '/chest protect' to become the owner of this chest");
 							return false;
 						}
-						else if (ServerSideCharacter.ChestManager.CanOpen(id, sPlayer))
+
+						if (ServerSideCharacter.ChestManager.CanOpen(id, sPlayer))
 						{
 							return false;
 						}
-						else
-						{
-							sPlayer.SendErrorInfo("You cannot open this chest");
-						}
+
+						sPlayer.SendErrorInfo("You cannot open this chest");
 						break;
 				}
 				ServerSideCharacter.ChestManager.RemovePending(sPlayer, pending);
@@ -232,26 +233,28 @@ namespace ServerSideCharacter
 					Player p = Main.player[playerNumber];
 					ServerPlayer player = p.GetServerPlayer();
 					int action = reader.ReadByte();
-					short X = reader.ReadInt16();
-					short Y = reader.ReadInt16();
+					short x = reader.ReadInt16();
+					short y = reader.ReadInt16();
 					short type = reader.ReadInt16();
 					int style = reader.ReadByte();
-					if (ServerSideCharacter.CheckSpawn(X, Y) && player.PermissionGroup.GroupName != "spadmin")
+					if (ServerSideCharacter.CheckSpawn(x, y) && player.PermissionGroup.GroupName != "spadmin")
 					{
 						player.SendErrorInfo("Warning: Spawn is protected from change");
-						NetMessage.SendTileSquare(-1, X, Y, 4);
+						NetMessage.SendTileSquare(-1, x, y, 4);
 						return true;
 					}
-					else if (ServerSideCharacter.RegionManager.CheckRegion(X, Y, player))
+
+					if (ServerSideCharacter.RegionManager.CheckRegion(x, y, player))
 					{
 						player.SendErrorInfo("Warning: You don't have permission to change this tile");
-						NetMessage.SendTileSquare(-1, X, Y, 4);
+						NetMessage.SendTileSquare(-1, x, y, 4);
 						return true;
 					}
-					else if (player.PermissionGroup.GroupName == "criminal")
+
+					if (player.PermissionGroup.GroupName == "criminal")
 					{
 						player.SendErrorInfo("Warning: Criminals cannot change tiles");
-						NetMessage.SendTileSquare(-1, X, Y, 4);
+						NetMessage.SendTileSquare(-1, x, y, 4);
 						return true;
 					}
 				}
@@ -265,10 +268,10 @@ namespace ServerSideCharacter
 
 		private bool ChatText(ref BinaryReader reader, int playerNumber)
 		{
-			int playerID = reader.ReadByte();
+			int playerId = reader.ReadByte();
 			if (Main.netMode == 2)
 			{
-				playerID = playerNumber;
+				playerId = playerNumber;
 			}
 			Color c = reader.ReadRGB();
 			if (Main.netMode == 2)
@@ -279,23 +282,24 @@ namespace ServerSideCharacter
 			if (Main.netMode == 1)
 			{
 				string text2 = text.Substring(text.IndexOf('>') + 1);
-				if (playerID < 255)
+				if (playerId < 255)
 				{
-					Main.player[playerID].chatOverhead.NewMessage(text2, Main.chatLength / 2);
+					//TODO; find chat length
+					Main.player[playerId].chatOverhead.NewMessage(text2, 2 / 2);
 				}
-				Main.NewTextMultiline(text, false, c, -1);
+				Main.NewTextMultiline(text, false, c);
 			}
 			else
 			{
-				Player p = Main.player[playerID];
+				Player p = Main.player[playerId];
 				ServerPlayer player = p.GetServerPlayer();
 				Group group = player.PermissionGroup;
 				string prefix = "[" + group.ChatPrefix + "] ";
 				c = group.ChatColor;
-				NetMessage.SendData(25, -1, -1, NetworkText.FromLiteral(prefix + "<" + p.name + "> " + text), playerID, (float)c.R, (float)c.G, (float)c.B, 0, 0, 0);
+				NetMessage.SendData(25, -1, -1, NetworkText.FromLiteral(prefix + "<" + p.name + "> " + text), playerId, c.R, c.G, c.B);
 				if (Main.dedServ)
 				{
-					Console.WriteLine("{0}<" + Main.player[playerID].name + "> " + text, prefix);
+					Console.WriteLine("{0}<" + Main.player[playerId].name + "> " + text, prefix);
 				}
 			}
 			return true;
@@ -311,7 +315,7 @@ namespace ServerSideCharacter
 			Player player = Main.player[id];
 			player.SpawnX = reader.ReadInt16();
 			player.SpawnY = reader.ReadInt16();
-			player.Spawn();
+			player.Spawn(PlayerSpawnContext.SpawningIntoWorld);
 			if (id == Main.myPlayer && Main.netMode != 2)
 			{
 				Main.ActivePlayerFileData.StartPlayTimer();
@@ -342,11 +346,11 @@ namespace ServerSideCharacter
 				NetMessage.greetPlayer(playerNumber);
 				NetMessage.buffer[playerNumber].broadcast = true;
 				ServerSideCharacter.SyncConnectedPlayer(playerNumber);
-				NetMessage.SendData(MessageID.SpawnPlayer, -1, playerNumber, NetworkText.Empty, playerNumber, 0f, 0f, 0f, 0, 0, 0);
-				NetMessage.SendData(MessageID.AnglerQuest, playerNumber, -1, NetworkText.FromLiteral(Main.player[playerNumber].name), Main.anglerQuest, 0f, 0f, 0f, 0, 0, 0);
+				NetMessage.SendData(MessageID.SpawnPlayer, -1, playerNumber, NetworkText.Empty, playerNumber);
+				NetMessage.SendData(MessageID.AnglerQuest, playerNumber, -1, NetworkText.FromLiteral(Main.player[playerNumber].name), Main.anglerQuest);
 				return true;
 			}
-			NetMessage.SendData(MessageID.SpawnPlayer, -1, playerNumber, NetworkText.Empty, playerNumber, 0f, 0f, 0f, 0, 0, 0);
+			NetMessage.SendData(MessageID.SpawnPlayer, -1, playerNumber, NetworkText.Empty, playerNumber);
 			return true;
 		}
 	}

@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using ServerSideCharacter.GroupManage;
-using ServerSideCharacter.ServerCommand;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using ServerSideCharacter.GroupManage;
+using ServerSideCharacter.ServerCommand;
 
 namespace ServerSideCharacter.Config.Group
 {
@@ -20,7 +20,7 @@ namespace ServerSideCharacter.Config.Group
 	}
 	public class GroupConfigManager
 	{
-		private ConfigConverter converter = new ConfigConverter();
+		private ConfigConverter _converter = new ConfigConverter();
 		public bool ConfigExist
 		{
 			get
@@ -56,7 +56,7 @@ namespace ServerSideCharacter.Config.Group
 			{
 				_configData = new ConfigData();
 				_configData.GroupType.SetupGroups();
-				string data = JsonConvert.SerializeObject(_configData, Formatting.Indented, converter);
+				string data = JsonConvert.SerializeObject(_configData, Formatting.Indented, _converter);
 				using (StreamWriter sw = new StreamWriter(_configPath))
 				{
 					sw.Write(data);
@@ -68,11 +68,11 @@ namespace ServerSideCharacter.Config.Group
 				using (StreamReader sr = new StreamReader(_configPath))
 				{
 					string data = sr.ReadToEnd();
-					_configData = JsonConvert.DeserializeObject<ConfigData>(data, converter);
+					_configData = JsonConvert.DeserializeObject<ConfigData>(data, _converter);
 
 					_configData.GroupType.SetupGroups(!_configData.GroupType.Groups.ContainsKey("default"), !_configData.GroupType.Groups.ContainsKey("criminal"), false, !_configData.GroupType.Groups.ContainsKey("spadmin")); //Add default, criminal and spadmin group if not exists
-					_configData.GroupType.Groups["spadmin"].permissions.Clear(); //clear all spadmin user created permissions
-					_configData.GroupType.Groups["spadmin"].permissions.Add(new PermissionInfo("all", "all commands")); //add all permissions to spadmin group
+					_configData.GroupType.Groups["spadmin"].Permissions.Clear(); //clear all spadmin user created permissions
+					_configData.GroupType.Groups["spadmin"].Permissions.Add(new PermissionInfo("all", "all commands")); //add all permissions to spadmin group
 				}
 			}
 		}
@@ -84,7 +84,7 @@ namespace ServerSideCharacter.Config.Group
 
 		public void Save()
 		{
-			string data = JsonConvert.SerializeObject(_configData, Formatting.Indented, converter);
+			string data = JsonConvert.SerializeObject(_configData, Formatting.Indented, _converter);
 			using (StreamWriter sw = new StreamWriter(_configPath))
 			{
 				sw.Write(data);

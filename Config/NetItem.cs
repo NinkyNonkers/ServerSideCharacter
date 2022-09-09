@@ -4,7 +4,7 @@ namespace ServerSideCharacter.Config
 {
 	public class NetItem
 	{
-		public int ItemID;
+		public int ItemId;
 		public int Prefix;
 		public bool IsModItem;
 		public bool IsFavorite;
@@ -13,15 +13,13 @@ namespace ServerSideCharacter.Config
 
 		public bool TheSameItem(Item item)
 		{
-			if (item.modItem != null)
+			if (item.ModItem != null)
 			{
 				NetItem tmp = Utils.ToNetItem(item);
-				return tmp.ModName == this.ModName && tmp.ItemName == this.ItemName;
+				return tmp.ModName == ModName && tmp.ItemName == ItemName;
 			}
-			else
-			{
-				return item.type == ItemID;
-			}
+
+			return item.type == ItemId;
 		}
 	}
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Terraria.ModLoader;
-using Terraria;
 using ServerSideCharacter.Extensions;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {

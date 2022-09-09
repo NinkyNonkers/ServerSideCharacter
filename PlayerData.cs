@@ -1,8 +1,8 @@
-﻿using ServerSideCharacter.Items;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using ServerSideCharacter.Items;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -55,14 +55,14 @@ namespace ServerSideCharacter
 					else
 					{
 						slots[id].netDefaults(ServerSideCharacter.Instance.ItemType("TestItem"));
-						((TestItem)slots[id].modItem).SetUp(text);
+						((TestItem)slots[id].ModItem).SetUp(text);
 						//物品数据会丢失
 					}
 				}
 				else
 				{
 					slots[id].netDefaults(ServerSideCharacter.Instance.ItemType("TestItem"));
-					((TestItem)slots[id].modItem).SetUp(text);
+					((TestItem)slots[id].ModItem).SetUp(text);
 					//物品数据会丢失
 
 				}
@@ -86,7 +86,7 @@ namespace ServerSideCharacter
 
 		public PlayerData(string path)
 		{
-			ServerPlayer.ResetUUID();
+			ServerPlayer.ResetUuid();
 			if (File.Exists(path))
 			{
 				XmlReaderSettings settings = new XmlReaderSettings { IgnoreComments = true };
@@ -108,7 +108,7 @@ namespace ServerSideCharacter
 					var info = pData.ChildNodes;
 					int i = 0;
 					player.Name = pData.GetAttribute("name");
-					player.UUID = int.Parse(pData.GetAttribute("uuid"));
+					player.Uuid = int.Parse(pData.GetAttribute("uuid"));
 					try
 					{
 						player.PermissionGroup = ServerSideCharacter.GroupManager.Groups[pData.GetAttribute("group")];
@@ -127,51 +127,51 @@ namespace ServerSideCharacter
 					player.StatLife = Convert.ToInt32(ReadNext(info, ref i));
 					player.ManaMax = Convert.ToInt32(ReadNext(info, ref i));
 					player.StatMana = Convert.ToInt32(ReadNext(info, ref i));
-					for (int id = 0; id < player.inventory.Length; id++)
+					for (int id = 0; id < player.Inventory.Length; id++)
 					{
-						TryReadItemInfo(modTable, info, player, ref i, id, ref player.inventory);
+						TryReadItemInfo(modTable, info, player, ref i, id, ref player.Inventory);
 						//player.inventory[id].Prefix(Convert.ToByte((info.Item(i - 1) as XmlElement).GetAttribute("prefix")));
 						//player.inventory[id].stack =
 						//	Convert.ToInt32((info.Item(i - 1) as XmlElement).GetAttribute("stack"));
 					}
-					for (int id = 0; id < player.armor.Length; id++)
+					for (int id = 0; id < player.Armor.Length; id++)
 					{
-						TryReadItemInfo(modTable, info, player, ref i, id, ref player.armor);
+						TryReadItemInfo(modTable, info, player, ref i, id, ref player.Armor);
 					}
-					for (int id = 0; id < player.dye.Length; id++)
+					for (int id = 0; id < player.Dye.Length; id++)
 					{
-						TryReadItemInfo(modTable, info, player, ref i, id, ref player.dye);
+						TryReadItemInfo(modTable, info, player, ref i, id, ref player.Dye);
 					}
-					for (int id = 0; id < player.miscEquips.Length; id++)
+					for (int id = 0; id < player.MiscEquips.Length; id++)
 					{
-						TryReadItemInfo(modTable, info, player, ref i, id, ref player.miscEquips);
+						TryReadItemInfo(modTable, info, player, ref i, id, ref player.MiscEquips);
 					}
-					for (int id = 0; id < player.miscDye.Length; id++)
+					for (int id = 0; id < player.MiscDye.Length; id++)
 					{
-						TryReadItemInfo(modTable, info, player, ref i, id, ref player.miscDye);
+						TryReadItemInfo(modTable, info, player, ref i, id, ref player.MiscDye);
 					}
-					for (int id = 0; id < player.bank.item.Length; id++)
+					for (int id = 0; id < player.Bank.item.Length; id++)
 					{
-						TryReadItemInfo(modTable, info, player, ref i, id, ref player.bank.item);
+						TryReadItemInfo(modTable, info, player, ref i, id, ref player.Bank.item);
 					}
-					for (int id = 0; id < player.bank2.item.Length; id++)
+					for (int id = 0; id < player.Bank2.item.Length; id++)
 					{
-						TryReadItemInfo(modTable, info, player, ref i, id, ref player.bank2.item);
+						TryReadItemInfo(modTable, info, player, ref i, id, ref player.Bank2.item);
 					}
-					for (int id = 0; id < player.bank3.item.Length; id++)
+					for (int id = 0; id < player.Bank3.item.Length; id++)
 					{
-						TryReadItemInfo(modTable, info, player, ref i, id, ref player.bank3.item);
+						TryReadItemInfo(modTable, info, player, ref i, id, ref player.Bank3.item);
 					}
 
 					Data.Add(player.Name, player);
-					ServerPlayer.IncreaseUUID();
+					ServerPlayer.IncreaseUuid();
 				}
-				ServerSideCharacter.MainWriter = new XMLWriter(path);
+				ServerSideCharacter.MainWriter = new XmlWriter(path);
 				reader.Close();
 			}
 			else
 			{
-				XMLWriter writer = new XMLWriter(path);
+				XmlWriter writer = new XmlWriter(path);
 				writer.Create();
 				ServerSideCharacter.MainWriter = writer;
 			}

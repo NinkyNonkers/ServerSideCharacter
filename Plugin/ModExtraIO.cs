@@ -2,7 +2,7 @@
 
 namespace ServerSideCharacter.Plugin
 {
-	public abstract class ModExtraIO
+	public abstract class ModExtraIo
 	{
 		public abstract string GetWriteString(Item item);
 

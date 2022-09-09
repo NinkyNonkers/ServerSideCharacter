@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace ServerSideCharacter.Region
 {
@@ -21,15 +21,15 @@ namespace ServerSideCharacter.Region
 		public string WelcomeInfo()
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine(string.Format("Welcome to region '{0}'!", Name));
-			sb.AppendLine(string.Format("*Region Owner: {0}", Owner.Name));
-			sb.AppendLine(string.Format("*Region Area: {0}", Area.ToString()));
+			sb.AppendLine($"Welcome to region '{Name}'!");
+			sb.AppendLine($"*Region Owner: {Owner.Name}");
+			sb.AppendLine($"*Region Area: {Area.ToString()}");
 			return sb.ToString();
 		}
 
 		public string LeaveInfo()
 		{
-			return string.Format("You have left '{0}'", Name);
+			return $"You have left '{Name}'";
 		}
 	}
 }

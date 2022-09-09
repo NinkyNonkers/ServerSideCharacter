@@ -30,136 +30,133 @@ namespace ServerSideCharacter.Region
 		}
 		private void SetFriendP(ServerPlayer player, ServerPlayer friend)
 		{
-			if (_friendPendings.ContainsKey(player.UUID))
+			if (_friendPendings.ContainsKey(player.Uuid))
 				if (friend == null)
-					_friendPendings.Remove(player.UUID);
+					_friendPendings.Remove(player.Uuid);
 				else
-					_friendPendings[player.UUID] = friend.UUID;
+					_friendPendings[player.Uuid] = friend.Uuid;
 			else if (friend != null)
-				_friendPendings.Add(player.UUID, friend.UUID);
+				_friendPendings.Add(player.Uuid, friend.Uuid);
 		}
 		public ServerPlayer GetFriendP(ServerPlayer player)
 		{
-			int uuid = _friendPendings.ContainsKey(player.UUID) ? _friendPendings[player.UUID] : -1;
+			int uuid = _friendPendings.ContainsKey(player.Uuid) ? _friendPendings[player.Uuid] : -1;
 			return ServerPlayer.FindPlayer(uuid);
 
 		}
 		public void AddPending(ServerPlayer player, Pending pending, ServerPlayer friend = null)
 		{
 
-			if (_pendings.ContainsKey(player.UUID))
-				_pendings[player.UUID] |= pending;
+			if (_pendings.ContainsKey(player.Uuid))
+				_pendings[player.Uuid] |= pending;
 			else
-				_pendings.Add(player.UUID, pending);
+				_pendings.Add(player.Uuid, pending);
 			if (pending.HasFlag(Pending.AddFriend) || pending.HasFlag(Pending.RemoveFriend))
 				SetFriendP(player, friend);
 		}
 		public void SetPendings(ServerPlayer player, Pending pending, ServerPlayer friend = null)
 		{
-			if (_pendings.ContainsKey(player.UUID))
-				_pendings[player.UUID] = pending;
+			if (_pendings.ContainsKey(player.Uuid))
+				_pendings[player.Uuid] = pending;
 			else
-				_pendings.Add(player.UUID, pending);
+				_pendings.Add(player.Uuid, pending);
 			if (pending.HasFlag(Pending.AddFriend) || pending.HasFlag(Pending.RemoveFriend))
 				SetFriendP(player, friend);
 
 		}
 		public void RemovePending(ServerPlayer player, Pending pending)
 		{
-			if (_pendings.ContainsKey(player.UUID))
-				_pendings[player.UUID] &= ~pending;
+			if (_pendings.ContainsKey(player.Uuid))
+				_pendings[player.Uuid] &= ~pending;
 			if (pending.HasFlag(Pending.AddFriend) || pending.HasFlag(Pending.RemoveFriend))
 				SetFriendP(player, null);
 		}
-		public void AddFriend(int chestID, ServerPlayer friend)
+		public void AddFriend(int chestId, ServerPlayer friend)
 		{
-			ChestInfo[chestID].AddFriend(friend);
+			ChestInfo[chestId].AddFriend(friend);
 		}
-		public void RemoveFriend(int chestID, ServerPlayer friend)
+		public void RemoveFriend(int chestId, ServerPlayer friend)
 		{
-			ChestInfo[chestID].RemoveFriend(friend);
+			ChestInfo[chestId].RemoveFriend(friend);
 		}
 		public void RemoveAllPendings(ServerPlayer player)
 		{
-			if (_pendings.ContainsKey(player.UUID))
-				_pendings[player.UUID] = new Pending();
+			if (_pendings.ContainsKey(player.Uuid))
+				_pendings[player.Uuid] = new Pending();
 			SetFriendP(player, null);
 		}
 		public Pending GetPendings(ServerPlayer player)
 		{
-			return _pendings.ContainsKey(player.UUID) ? _pendings[player.UUID] : new Pending();
+			return _pendings.ContainsKey(player.Uuid) ? _pendings[player.Uuid] : new Pending();
 
 		}
-		public void SetOwner(int chestID, int ownerID, bool isPublic)
+		public void SetOwner(int chestId, int ownerId, bool isPublic)
 		{
-			ChestInfo[chestID].OwnerID = ownerID;
-			ChestInfo[chestID].IsPublic = isPublic;
+			ChestInfo[chestId].OwnerId = ownerId;
+			ChestInfo[chestId].IsPublic = isPublic;
 		}
 
-		public bool IsNull(int chestID)
+		public bool IsNull(int chestId)
 		{
-			var id = ChestInfo[chestID].OwnerID;
+			var id = ChestInfo[chestId].OwnerId;
 			return id == -1;
 		}
-		public bool IsOwner(int chestID, ServerPlayer player)
+		public bool IsOwner(int chestId, ServerPlayer player)
 		{
-			var id = ChestInfo[chestID].OwnerID;
-			return id == player.UUID || player.PermissionGroup.HasPermission("chest") && id != -1;
+			var id = ChestInfo[chestId].OwnerId;
+			return id == player.Uuid || player.PermissionGroup.HasPermission("chest") && id != -1;
 		}
-		public bool IsPublic(int chestID)
+		public bool IsPublic(int chestId)
 		{
-			var isPublic = ChestInfo[chestID].IsPublic;
+			var isPublic = ChestInfo[chestId].IsPublic;
 			return isPublic;
 		}
-		public bool CanOpen(int chestID, ServerPlayer player)
+		public bool CanOpen(int chestId, ServerPlayer player)
 		{
-			var id = ChestInfo[chestID].OwnerID;
-			var isPublic = ChestInfo[chestID].IsPublic;
-			var friends = ChestInfo[chestID].Friends;
-			return id == -1 || id == player.UUID || player.PermissionGroup.HasPermission("chest") || isPublic || friends.Contains(player.UUID);
+			var id = ChestInfo[chestId].OwnerId;
+			var isPublic = ChestInfo[chestId].IsPublic;
+			var friends = ChestInfo[chestId].Friends;
+			return id == -1 || id == player.Uuid || player.PermissionGroup.HasPermission("chest") || isPublic || friends.Contains(player.Uuid);
 		}
 	}
 	public class ChestInfo
 	{
-		private int ownerID = -1;
-		private bool isPublic = false;
-		private List<int> friends = new List<int>();
-		public ChestInfo()
-		{
+		private int _ownerId = -1;
+		private bool _isPublic;
+		private List<int> _friends = new List<int>();
 
-		}
 		public void AddFriend(ServerPlayer player)
 		{
-			if (!friends.Contains(player.UUID) && ownerID > -1 && player.UUID != ownerID)
-				friends.Add(player.UUID);
+			if (!_friends.Contains(player.Uuid) && _ownerId > -1 && player.Uuid != _ownerId)
+				_friends.Add(player.Uuid);
 		}
 		public void RemoveFriend(ServerPlayer player)
 		{
-			if (friends.Contains(player.UUID) && ownerID > -1)
-				friends.RemoveAll(id => id == player.UUID);
+			if (_friends.Contains(player.Uuid) && _ownerId > -1)
+				_friends.RemoveAll(id => id == player.Uuid);
 		}
-		public int OwnerID
+		public int OwnerId
 		{
-			get { return ownerID; }
+			get { return _ownerId; }
 			set
 			{
 				if (value <= -1)
 				{
-					isPublic = false;
-					friends.Clear();
+					_isPublic = false;
+					_friends.Clear();
 					value = -1; //Just in case if value is < -1
 				}
-				ownerID = value;
+				_ownerId = value;
 			}
 		}
 		public bool IsPublic
 		{
-			get { return isPublic; }
-			set { isPublic = value; }
+			get { return _isPublic; }
+			set { _isPublic = value; }
 		}
 		public List<int> Friends
 		{
-			get { return friends; }
+			get { return _friends; }
 		}
 	}
 }

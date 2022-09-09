@@ -1,6 +1,6 @@
-﻿using Terraria.ModLoader;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {
@@ -28,7 +28,7 @@ namespace ServerSideCharacter.ServerCommand
 
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
-			Main.NewText("mod作者: DXTsT\n当前版本: " + ServerSideCharacter.APIVersion + "\nGithub网址: https://github.com/bdfzchen2015/ServerSideCharacter" +
+			Main.NewText("mod作者: DXTsT\n当前版本: " + ServerSideCharacter.ApiVersion + "\nGithub网址: https://github.com/bdfzchen2015/ServerSideCharacter" +
 				"\n感谢你们对我的支持!", Color.Yellow);
 		}
 	}

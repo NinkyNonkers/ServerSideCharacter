@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Terraria.ModLoader;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter.ServerCommand
 {
@@ -102,7 +102,7 @@ namespace ServerSideCharacter.ServerCommand
 							sb.AppendLine(string.Format("{0}. Group Name: {1}  Chat Prefix: {2}\n   Permissions:",
 								i, group.Key, group.Value.ChatPrefix));
 							sb.AppendLine("{");
-							foreach (var perm in group.Value.permissions)
+							foreach (var perm in group.Value.Permissions)
 							{
 								sb.AppendLine("\t" + perm.Name);
 							}
@@ -126,7 +126,7 @@ namespace ServerSideCharacter.ServerCommand
 							"\t",
 							pla.Value.Name,
 							"\t",
-							pla.Value.UUID,
+							pla.Value.Uuid,
 							"\t",
 							pla.Value.PermissionGroup.GroupName,
 							"\t",
