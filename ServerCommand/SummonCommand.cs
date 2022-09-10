@@ -29,8 +29,7 @@ namespace ServerSideCharacter.ServerCommand
 		static private string[] GetArgs(string[] source)
 		{
 			string name;
-			int amount;
-			if (source.Length > 1 && int.TryParse(source.Last(), out amount))
+			if (source.Length > 1 && int.TryParse(source.Last(), out var amount))
 			{
 				name = string.Join(" ", source.Take(source.Length - 1));
 			}
@@ -45,9 +44,8 @@ namespace ServerSideCharacter.ServerCommand
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
 			args = GetArgs(args);
-			int type;
 			int amount = int.Parse(args[1]);
-			if (!int.TryParse(args[0], out type))
+			if (!int.TryParse(args[0], out var type))
 			{
 				NPC npc = Utils.TryGetNpc(args[0]);
 				if (npc == null)

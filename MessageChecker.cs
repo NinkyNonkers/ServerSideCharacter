@@ -20,17 +20,14 @@ namespace ServerSideCharacter
 
 	public class MessageChecker
 	{
-		private Dictionary<int, MessagePatchDelegate> _method;
+		private readonly Dictionary<int, MessagePatchDelegate> _method;
 
 		public bool CheckMessage(ref byte messageType, ref BinaryReader reader, int playerNumber)
 		{
 			try
 			{
-				MessagePatchDelegate mpd;
-				if (_method.TryGetValue(messageType, out mpd))
-				{
+				if (_method.TryGetValue(messageType, out var mpd))
 					return mpd(ref reader, playerNumber);
-				}
 			}
 			catch (Exception ex)
 			{
@@ -44,10 +41,10 @@ namespace ServerSideCharacter
 		{
 			_method = new Dictionary<int, MessagePatchDelegate>
 			{
-				{ MessageID.SpawnPlayer, PlayerSpawn },
+				{ MessageID.PlayerSpawn, PlayerSpawn },
 				{ MessageID.ChatText, ChatText },
 				{ MessageID.NetModules, HandleNetModules },
-				{ MessageID.TileChange, TileChange },
+				{ MessageID.TileManipulation, TileChange },
 				{ MessageID.PlayerControls, PlayerControls },
 				{ MessageID.RequestChestOpen, RequestChestOpen }
 			};
@@ -202,24 +199,22 @@ namespace ServerSideCharacter
 
 		private bool PlayerControls(ref BinaryReader reader, int playerNumber)
 		{
-			if (Main.netMode == 2)
+			if (Main.netMode != 2) return false;
+			byte plr = reader.ReadByte();
+			BitsByte control = reader.ReadByte();
+			BitsByte pulley = reader.ReadByte();
+			byte item = reader.ReadByte();
+			var pos = reader.ReadVector2();
+			Player player = Main.player[playerNumber];
+			ServerPlayer sPlayer = player.GetServerPlayer();
+			if (pulley[2])
 			{
-				byte plr = reader.ReadByte();
-				BitsByte control = reader.ReadByte();
-				BitsByte pulley = reader.ReadByte();
-				byte item = reader.ReadByte();
-				var pos = reader.ReadVector2();
-				Player player = Main.player[playerNumber];
-				ServerPlayer sPlayer = player.GetServerPlayer();
-				if (pulley[2])
-				{
-					var vel = reader.ReadVector2();
-				}
-				if (ServerSideCharacter.Config.IsItemBanned(sPlayer.PrototypePlayer.inventory[item], sPlayer))
-				{
-					sPlayer.ApplyLockBuffs();
-					sPlayer.SendErrorInfo("You used a banned item: " + player.inventory[item].Name);
-				}
+				var vel = reader.ReadVector2();
+			}
+			if (ServerSideCharacter.Config.IsItemBanned(sPlayer.PrototypePlayer.inventory[item], sPlayer))
+			{
+				sPlayer.ApplyLockBuffs();
+				sPlayer.SendErrorInfo("You used a banned item: " + player.inventory[item].Name);
 			}
 			return false;
 		}
@@ -346,11 +341,11 @@ namespace ServerSideCharacter
 				NetMessage.greetPlayer(playerNumber);
 				NetMessage.buffer[playerNumber].broadcast = true;
 				ServerSideCharacter.SyncConnectedPlayer(playerNumber);
-				NetMessage.SendData(MessageID.SpawnPlayer, -1, playerNumber, NetworkText.Empty, playerNumber);
+				NetMessage.SendData(MessageID.PlayerSpawn, -1, playerNumber, NetworkText.Empty, playerNumber);
 				NetMessage.SendData(MessageID.AnglerQuest, playerNumber, -1, NetworkText.FromLiteral(Main.player[playerNumber].name), Main.anglerQuest);
 				return true;
 			}
-			NetMessage.SendData(MessageID.SpawnPlayer, -1, playerNumber, NetworkText.Empty, playerNumber);
+			NetMessage.SendData(MessageID.PlayerSpawn, -1, playerNumber, NetworkText.Empty, playerNumber);
 			return true;
 		}
 	}

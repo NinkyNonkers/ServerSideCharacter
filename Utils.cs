@@ -91,8 +91,7 @@ namespace ServerSideCharacter
 			if (!(obj is int) && !(obj is string) && !(obj is byte))
 				return -1;
 			string text = obj.ToString();
-			int who;
-			if (!int.TryParse(text, out who))
+			if (!int.TryParse(text, out var who))
 			{
 				Player player = TryGetPlayer(text);
 				if (player == null || !player.active)
