@@ -2,7 +2,7 @@
 
 namespace ServerSideCharacter.ServerCommand
 {
-	public static class CommandBoardcast
+	public static class CommandBroadcast
 	{
 
 		public static void ConsoleSaveInfo()

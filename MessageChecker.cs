@@ -34,7 +34,7 @@ namespace ServerSideCharacter
 			}
 			catch (Exception ex)
 			{
-				CommandBoardcast.ConsoleError(ex);
+				CommandBroadcast.ConsoleError(ex);
 			}
 
 			return false;
@@ -260,7 +260,7 @@ namespace ServerSideCharacter
 				}
 				catch (Exception ex)
 				{
-					CommandBoardcast.ConsoleError(ex);
+					CommandBroadcast.ConsoleError(ex);
 				}
 			}
 			return false;

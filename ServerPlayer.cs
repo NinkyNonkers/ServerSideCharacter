@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace ServerSideCharacter
 {
@@ -116,11 +117,12 @@ namespace ServerSideCharacter
 
 		public void ApplyLockBuffs(int time = 180)
 		{
-			PrototypePlayer.AddBuff(ServerSideCharacter.Instance.BuffType("Locked"), time * 2, false);
+			ServerSideCharacter.Instance.TryFind("Locked", out ModBuff buff);
+			PrototypePlayer.AddBuff(buff.Type, time * 2, false);
 			PrototypePlayer.AddBuff(BuffID.Frozen, time, false);
 			NetMessage.SendData(MessageID.AddPlayerBuff, PrototypePlayer.whoAmI, -1,
 				NetworkText.Empty, PrototypePlayer.whoAmI,
-				ServerSideCharacter.Instance.BuffType("Locked"), time * 2);
+				buff.Type, time * 2);
 			NetMessage.SendData(MessageID.AddPlayerBuff, PrototypePlayer.whoAmI, -1,
 				NetworkText.Empty, PrototypePlayer.whoAmI,
 				BuffID.Frozen, time);

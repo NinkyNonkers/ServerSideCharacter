@@ -112,7 +112,7 @@ namespace ServerSideCharacter.ServerCommand
 					}
 					else
 					{
-						CommandBoardcast.ConsoleError("Invalid Sytanx: ls [rg / gp]");
+						CommandBroadcast.ConsoleError("Invalid Sytanx: ls [rg / gp]");
 					}
 				}
 				else
@@ -140,7 +140,7 @@ namespace ServerSideCharacter.ServerCommand
 			}
 			catch (Exception ex)
 			{
-				CommandBoardcast.ConsoleError(ex);
+				CommandBroadcast.ConsoleError(ex);
 			}
 		}
 	}

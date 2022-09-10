@@ -61,7 +61,7 @@ namespace ServerSideCharacter.Config.Group
 				{
 					sw.Write(data);
 				}
-				CommandBoardcast.ConsoleMessage("Group config file created.");
+				CommandBroadcast.ConsoleMessage("Group config file created.");
 			}
 			else
 			{

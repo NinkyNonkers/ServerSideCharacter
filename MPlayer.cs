@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using System;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
@@ -6,7 +7,6 @@ namespace ServerSideCharacter
 {
 	public class MPlayer : ModPlayer
 	{
-
 		public bool Locked;
 
 		public bool GodMode = false;
@@ -49,10 +49,13 @@ namespace ServerSideCharacter
 
 		public override void OnEnterWorld(Player player)
 		{
-			if (Main.netMode == 1)
+			if (Main.netMode != 1) return;
+			if (!Mod.TryFind("Locked", out ModBuff buff))
 			{
-				player.AddBuff(Mod.BuffType("Locked"), 180);
+				Console.WriteLine("error: couldn't find locked buff");
+				return;
 			}
+			player.AddBuff(buff.Type, 180);
 		}
 	}
 }

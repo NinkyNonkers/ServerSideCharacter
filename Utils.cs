@@ -198,7 +198,8 @@ namespace ServerSideCharacter
 					return new Item();
 				}
 				Item item = new Item();
-				item.netDefaults(targetMod.First().ItemType(netItem.ItemName));
+				targetMod.First().TryFind(netItem.ItemName, out ModItem itemType);
+				item.netDefaults(itemType.Type);
 				item.prefix = (byte)netItem.Prefix;
 				item.favorited = netItem.IsFavorite;
 				return item;

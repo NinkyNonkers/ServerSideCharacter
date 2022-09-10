@@ -40,7 +40,8 @@ namespace ServerSideCharacter
 				//解析物品id，字典中有mod名字
 				if (modTable.ContainsKey(modName))
 				{
-					type = modTable[modName].ItemType(itemName);
+					modTable[modName].TryFind("TestItem", out ModItem it);
+					type = it.Type;
 					//如果数据合法
 					if (type > 0)
 					{
@@ -54,14 +55,16 @@ namespace ServerSideCharacter
 					}
 					else
 					{
-						slots[id].netDefaults(ServerSideCharacter.Instance.ItemType("TestItem"));
+						ServerSideCharacter.Instance.TryFind("TestItem", out ModItem item);
+						slots[id].netDefaults(item.Type);
 						((TestItem)slots[id].ModItem).SetUp(text);
 						//物品数据会丢失
 					}
 				}
 				else
 				{
-					slots[id].netDefaults(ServerSideCharacter.Instance.ItemType("TestItem"));
+					ServerSideCharacter.Instance.TryFind("TestItem", out ModItem item);
+					slots[id].netDefaults(item.Type);
 					((TestItem)slots[id].ModItem).SetUp(text);
 					//物品数据会丢失
 
@@ -97,10 +100,8 @@ namespace ServerSideCharacter
 				XmlNode xn = xmlDoc.SelectSingleNode("Players");
 				var list = xn.ChildNodes;
 				Dictionary<string, Mod> modTable = new Dictionary<string, Mod>();
-				foreach (var mod in ModLoader.LoadedMods)
-				{
+				foreach (var mod in ModLoader.Mods)
 					modTable.Add(mod.Name, mod);
-				}
 				foreach (var node in list)
 				{
 					XmlElement pData = (XmlElement)node;

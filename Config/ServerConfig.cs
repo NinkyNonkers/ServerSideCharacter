@@ -117,7 +117,7 @@ namespace ServerSideCharacter.Config
 				{
 					sw.Write(data);
 				}
-				CommandBoardcast.ConsoleMessage("Config file created.");
+				CommandBroadcast.ConsoleMessage("Config file created.");
 			}
 			else
 			{
